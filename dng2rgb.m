@@ -1,26 +1,48 @@
 function [Csrgb, Clinear, Cxyz, Ccam] = dng2rgb(rawim, XYZ2Cam, wbcoeffs, bayertype, method, M, N)
-    
-    % white balance correction
+
+    %% white balance correction
     mask = wbmask(M, N, wbcoeffs, bayertype);
     rawim = rawim .* mask;
+    % imshow(rawim); % just for testing
     
-    % demosaicing
+    %% Demosaicing
     if method == "nearest"
         Ccam = demosaicNN(rawim);
     elseif method == "linear"
         Ccam = demosaicLinear(rawim);
     end
+    % imshow(Ccam);
+    % fprintf("%i\n", size(Ccam));
+    
+    %% Transformations
     
     % Camera to XYZ
     Cxyz = apply_cmatrix(Ccam, XYZ2Cam);
+    % imshow(Cxyz);
+    % fprintf("%i\n", size(Cxyz));
     
     % XYZ to linear
-    XYZ2RGB = [];
-    Clinear = apply_cmatrix(Cxyz, XYZ2RGB);
+    RGB2XYZ = [0.4124564 0.3575761 0.1804375 ; 0.2126729 0.7151522 0.0721750 ; 0.0193339 0.1191920 0.9503041];
+    RGB2Cam = XYZ2Cam * RGB2XYZ; % Assuming previously defined matrices
+    RGB2Cam = RGB2Cam ./ repmat(sum(RGB2Cam, 2), 1, 3); % Normalize rows to 1
+    Cam2RGB = RGB2Cam^-1;
+    Clinear = apply_cmatrix(Ccam, Cam2RGB);
+    Clinear = max(0, min(Clinear, 1)); % Always keep image clipped b/w 0-1
+    % imshow(Clinear);
+    % fprintf("%i\n", size(Clinear));
     
     % sRGB correction
+    Csrgb = Clinear.^(1/2.2);
+    imshow(Csrgb);
+    fprintf("%i\n", size(Csrgb));
     
-    Csrgb = Clinear;
+    
+    
+    
+    
+    
+    
+    
     
     
 end
