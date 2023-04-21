@@ -31,10 +31,17 @@ function [Csrgb, Clinear, Cxyz, Ccam] = dng2rgb(rawim, XYZ2Cam, wbcoeffs, bayert
     % imshow(Clinear);
     % fprintf("%i\n", size(Clinear));
     
-    % sRGB correction
-    Csrgb = Clinear.^(1/2.2);
-    imshow(Csrgb);
-    fprintf("%i\n", size(Csrgb));
+    %% sRGB correction
+    % brightness correction
+    grayim = rgb2gray(Clinear);
+    grayscale = 0.25/mean(grayim(:));
+    bright_srgb = min(1, Clinear*grayscale);
+    
+    % gamma correction
+    Csrgb = bright_srgb.^(1/2.2);
+    
+    % imshow(Csrgb);
+    % fprintf("%i\n", size(Csrgb));
     
     
     

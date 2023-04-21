@@ -7,10 +7,10 @@ function mosim = demosaicNN(im)
 [imageHeight, imageWidth] = size(im);
 % fprintf("imageWidth: %i and imageHeight: %i", imageWidth, imageHeight);
 
-% creating masks for the bayer pattern (only for GRBG bayer pattern)
-bayer_red = repmat([0 1; 0 0], ceil(imageHeight/2), ceil(imageWidth/2));
-bayer_blue = repmat([0 0; 1 0], ceil(imageHeight/2), ceil(imageWidth/2));
-bayer_green = repmat([1 0; 0 1], ceil(imageHeight/2), ceil(imageWidth/2));
+% creating masks for the bayer pattern (only for RGGB bayer pattern)
+bayer_red = repmat([1 0 ; 0 0], ceil(imageHeight/2), ceil(imageWidth/2));
+bayer_blue = repmat([0 0 ; 0 1], ceil(imageHeight/2), ceil(imageWidth/2));
+bayer_green = repmat([0 1 ; 1 0], ceil(imageHeight/2), ceil(imageWidth/2));
 
 % truncating the extra pixels at the edges (not necessary for the resolution of the image of the project)
 if(mod(imageWidth,2))==1
@@ -34,7 +34,7 @@ green_image = im.*bayer_green;
 green = green_image + imfilter(green_image, [0 1]);
 
 % computing the red pixels at missing points
-redValue = im(1:2:imageHeight, 2:2:imageWidth);
+redValue = im(1:2:imageHeight, 1:2:imageWidth);
 meanRed = mean(mean(redValue));
 % red@blue
 % Input array values outside the bounds of the array are assigned the value meanRed.
@@ -48,7 +48,7 @@ red_2 = imfilter(red_image, [0 1;1 0], meanRed);
 red = red_image + red_1 + red_2;
 
 % computing the blue pixels at missing points
-blueValue = im(2:2:imageHeight, 1:2:imageWidth);
+blueValue = im(1:2:imageHeight, 1:2:imageWidth);
 meanBlue = mean(mean(blueValue));
 % blue@red
 % Input array values outside the bounds of the array are assigned the value meanBlue.

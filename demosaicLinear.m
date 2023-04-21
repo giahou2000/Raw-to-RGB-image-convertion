@@ -7,10 +7,10 @@ function mosim = demosaicLinear(im)
 %
 [imageHeight, imageWidth]=size(im);
 
-% creating masks for the bayer pattern (only for GRBG bayer pattern)
-bayer_red = repmat([0 1; 0 0], ceil(imageHeight/2), ceil(imageWidth/2));
-bayer_blue = repmat([0 0; 1 0], ceil(imageHeight/2), ceil(imageWidth/2));
-bayer_green = repmat([1 0; 0 1], ceil(imageHeight/2), ceil(imageWidth/2));
+% creating masks for the bayer pattern (only for RGGB bayer pattern)
+bayer_red = repmat([1 0 ; 0 0], ceil(imageHeight/2), ceil(imageWidth/2));
+bayer_blue = repmat([0 0 ; 0 1], ceil(imageHeight/2), ceil(imageWidth/2));
+bayer_green = repmat([0 1 ; 1 0], ceil(imageHeight/2), ceil(imageWidth/2));
 
 % truncating the extra pixels at the edges (not necessary for the resolution of the image of the project)
 if(mod(imageWidth,2))==1
